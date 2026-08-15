@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Agro-Medicine E-Commerce Marketplace - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🛒 Agro-Medicine E-Commerce Marketplace</h1>
+  <p style="color: var(--text-muted);">Purchase verified organic bio-fungicides and inorganic crop medicines recommended by AI diagnostics.</p>
+</section>
+
+<!-- Filter & Search Controls -->
+<div class="glass-card" style="margin-bottom: 2rem; padding: 1.25rem;">
+  <form method="GET" action="/marketplace" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 240px;">
+      <input type="text" name="search" value="{{ search or '' }}" placeholder="Search products (e.g. Neem Oil, Copper Fungicide, Blight)..." style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+    </div>
+    <div>
+      <select name="type" style="padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        <option value="">All Categories</option>
+        <option value="organic" {% if p_type == 'organic' %}selected{% endif %}>Organic Remedies</option>
+        <option value="chemical" {% if p_type == 'chemical' %}selected{% endif %}>Inorganic / Chemical</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-nav" style="border: none; cursor: pointer;">Filter Products</button>
+  </form>
+</div>
+
+<!-- Product Cards Grid -->
+<div class="workspace-grid">
+  {% for p in products %}
+    <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <!-- AI Recommendation & Seller Badges -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.7rem; text-transform: uppercase; background: rgba(16,185,129,0.15); color: var(--accent-mint); border: 1px solid var(--border-active); padding: 2px 8px; border-radius: 12px; font-weight: bold;">
+            ★ Recommended by AI
+          </span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">
+            ✔ Verified Seller ({{ p.seller_name }})
+          </span>
+        </div>
+
+        <img src="{{ p.image_url or '/static/samples/tomato_late_blight.jpg' }}" alt="{{ p.name }}" style="width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid var(--border-glass);">
+
+        <h3>{{ p.name }}</h3>
+        <div style="font-size: 0.85rem; color: var(--accent-mint); font-weight: 600; margin-bottom: 0.5rem;">
+          Target: {{ p.target_disease }}
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem;">
+          {{ p.description[:110] }}...
+        </p>
+      </div>
+
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span style="font-size: 1.5rem; font-weight: 800; color: #fff;">${{ "%.2f"|format(p.price) }}</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Stock: {{ p.stock }} units</span>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/product/{{ p.id }}" class="nav-link" style="flex: 1; text-align: center; border: 1px solid var(--border-glass);">
+            📖 Usage Guide
+          </a>
+          <button type="button" onclick="addToCart({{ p.id }}, '{{ p.name|escape }}', {{ p.price }})" class="btn-primary" style="flex: 1; margin-top: 0; padding: 0.6rem;">
+            🛒 Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

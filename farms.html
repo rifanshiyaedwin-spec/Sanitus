@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Multi-Farm & Field Management - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🚜 Multi-Farm & Field Mapping Manager</h1>
+  <p style="color: var(--text-muted);">Organize multiple agricultural land plots, track individual field health, and view monthly crop calendars.</p>
+</section>
+
+<!-- Farm Overview Cards -->
+<div class="workspace-grid" style="margin-bottom: 2rem;">
+  
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="color: var(--accent-mint);">🏡 Farm #1: Green Valley Plot</h3>
+      <span class="badge-status healthy">Active (4 Acres)</span>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Primary Crop: <strong>Tomato & Bell Pepper</strong></p>
+
+    <!-- Field Status Mapping Grid -->
+    <h4 style="color: #fff; margin-bottom: 0.5rem;">Field Status Mapping:</h4>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
+      <div style="background: rgba(16,185,129,0.15); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm); padding: 0.75rem;">
+        <strong style="color: var(--accent-mint);">Field A (1.5 Ac)</strong>
+        <div style="font-size: 0.8rem; color: #fff;">✔ Healthy</div>
+      </div>
+      <div style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: var(--radius-sm); padding: 0.75rem;">
+        <strong style="color: #fca5a5;">Field B (1.5 Ac)</strong>
+        <div style="font-size: 0.8rem; color: #fff;">⚠ Early Blight (15%)</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 0.75rem;">
+        <strong style="color: var(--text-muted);">Field C (1.0 Ac)</strong>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">🌾 Harvested</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="color: var(--accent-mint);">🌽 Farm #2: Sunrise Orchard</h3>
+      <span class="badge-status healthy">Active (6 Acres)</span>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Primary Crop: <strong>Corn & Apple Orchard</strong></p>
+
+    <h4 style="color: #fff; margin-bottom: 0.5rem;">Field Status Mapping:</h4>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; text-align: center;">
+      <div style="background: rgba(16,185,129,0.15); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm); padding: 0.75rem;">
+        <strong style="color: var(--accent-mint);">North Block (3 Ac)</strong>
+        <div style="font-size: 0.8rem; color: #fff;">✔ Healthy Corn</div>
+      </div>
+      <div style="background: rgba(16,185,129,0.15); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm); padding: 0.75rem;">
+        <strong style="color: var(--accent-mint);">South Block (3 Ac)</strong>
+        <div style="font-size: 0.8rem; color: #fff;">✔ Healthy Apple</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Crop Calendar Schedule -->
+<div class="glass-card">
+  <div class="card-title">
+    <span>📅</span>
+    <span>Monthly Crop Lifecycle Calendar</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 1rem; border-radius: var(--radius-md);">
+      <strong style="color: var(--accent-mint);">Phase 1: Sowing</strong>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Soil preparation, seed inoculation, and basal fertilizer.</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 1rem; border-radius: var(--radius-md);">
+      <strong style="color: #f59e0b;">Phase 2: Vegetative</strong>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Nitrogen top-dressing & preventative neem oil spraying.</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 1rem; border-radius: var(--radius-md);">
+      <strong style="color: #60a5fa;">Phase 3: Flowering</strong>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Fungicide protection spray & drip irrigation.</div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 1rem; border-radius: var(--radius-md);">
+      <strong style="color: #34d399;">Phase 4: Harvest</strong>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Yield measurement and post-harvest residue clearing.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

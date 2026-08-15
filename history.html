@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% set active_page = "history" %}
+
+{% block title %}Scan History & Database Log - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 1.5rem;">
+  <h1>Plant Leaf Scan History</h1>
+  <p style="color: var(--text-muted);">Historical logs of analyzed crops, deep learning predictions, and confidence metrics stored in SQLite database.</p>
+</section>
+
+<!-- Dashboard Summary Statistics Cards -->
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.total }}</div>
+    <div class="stat-label">Total Leaf Scans</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color: var(--status-diseased);">{{ stats.diseased }}</div>
+    <div class="stat-label">Diseases Detected</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color: var(--status-healthy);">{{ stats.healthy }}</div>
+    <div class="stat-label">Healthy Leaves</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color: var(--accent-mint);">{{ stats.avg_confidence }}%</div>
+    <div class="stat-label">Avg AI Confidence</div>
+  </div>
+</div>
+
+<!-- Filter Controls -->
+<div class="glass-card" style="margin-bottom: 2rem; padding: 1.25rem;">
+  <form method="GET" action="/history" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 200px;">
+      <input type="text" name="crop" value="{{ crop_filter or '' }}" placeholder="Filter by Crop (e.g. Tomato, Apple, Corn)..." style="width: 100%; padding: 0.6rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+    </div>
+    <div>
+      <select name="status" style="padding: 0.6rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        <option value="">All Statuses</option>
+        <option value="Diseased" {% if status_filter == 'Diseased' %}selected{% endif %}>Diseased Only</option>
+        <option value="Healthy" {% if status_filter == 'Healthy' %}selected{% endif %}>Healthy Only</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-nav" style="border: none; cursor: pointer;">Search Logs</button>
+    {% if crop_filter or status_filter %}
+      <a href="/history" style="color: var(--text-muted); font-size: 0.85rem;">Clear Filters</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- History Data Table -->
+<div class="glass-card">
+  {% if scans and scans|length > 0 %}
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Leaf Photo</th>
+          <th>Crop Species</th>
+          <th>Predicted Condition</th>
+          <th>Status</th>
+          <th>AI Confidence</th>
+          <th>Scan Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for scan in scans %}
+          <tr>
+            <td>#{{ scan.id }}</td>
+            <td>
+              <img src="/{{ scan.image_path }}" alt="Leaf thumbnail" class="history-thumb">
+            </td>
+            <td><strong>{{ scan.crop }}</strong></td>
+            <td>{{ scan.disease }}</td>
+            <td>
+              <span class="badge-status {% if scan.status == 'Healthy' %}healthy{% else %}diseased{% endif %}">
+                {{ scan.status }}
+              </span>
+            </td>
+            <td>
+              <strong style="color: var(--accent-mint);">{{ scan.confidence }}%</strong>
+            </td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ scan.created_at }}</td>
+            <td>
+              <a href="/export-report/{{ scan.id }}" target="_blank" style="font-size: 0.85rem; margin-right: 8px;">📄 Report</a>
+              <a href="/delete-scan/{{ scan.id }}" onclick="return confirm('Delete this scan entry?');" style="color: #ef4444; font-size: 0.85rem;">🗑 Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+      <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">No historical scans found matching criteria.</p>
+      <p style="font-size: 0.88rem;"><a href="/">Run a new leaf analysis scan on the homepage</a></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Video Learning Center - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🎥 Agricultural Video Learning Center</h1>
+  <p style="color: var(--text-muted);">Watch video tutorials on organic pesticide preparation, crop disease identification, and sprayer calibration.</p>
+</section>
+
+<div class="workspace-grid">
+  
+  <div class="glass-card">
+    <div style="background: rgba(0,0,0,0.5); border-radius: var(--radius-sm); height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; border: 1px solid var(--border-glass);">
+      <span style="font-size: 3rem; color: var(--accent-mint); cursor: pointer;" onclick="alert('Playing tutorial video: How to prepare organic neem bio-pesticide at home');">▶</span>
+    </div>
+    <h3>How to Prepare Cold-Pressed Neem Bio-Pesticide</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Learn step-by-step mixing ratios for neem oil, water, and organic emulsifiers for early blight control.</p>
+  </div>
+
+  <div class="glass-card">
+    <div style="background: rgba(0,0,0,0.5); border-radius: var(--radius-sm); height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; border: 1px solid var(--border-glass);">
+      <span style="font-size: 3rem; color: var(--accent-mint); cursor: pointer;" onclick="alert('Playing tutorial video: Identifying Tomato Early vs Late Blight');">▶</span>
+    </div>
+    <h3>Identifying Tomato Early Blight vs Late Blight</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Visual field inspection guide explaining concentric target ring lesions versus downy mildew growth.</p>
+  </div>
+
+</div>
+{% endblock %}

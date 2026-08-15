@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Dashboard - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>👨‍🌾 Farmer Command Dashboard</h1>
+  <p style="color: var(--text-muted);">Real-time weather alerts, farm health score, recent leaf diagnostics, and active orders.</p>
+</section>
+
+<!-- Overview Stat Cards Grid -->
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number" style="color: var(--accent-mint);">92%</div>
+    <div class="stat-label">Farm Health Score</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ weather.temperature_c }}°C</div>
+    <div class="stat-label">Current Temperature</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color: #f59e0b;">{{ weather.humidity }}%</div>
+    <div class="stat-label">Air Humidity</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color: #60a5fa;">{{ scans|length }}</div>
+    <div class="stat-label">Total Leaf Scans</div>
+  </div>
+</div>
+
+<!-- Weather & Quick Actions Workspace -->
+<div class="workspace-grid" style="margin-bottom: 2rem;">
+  
+  <div class="glass-card">
+    <div class="card-title">
+      <span>🌦</span>
+      <span>Weather & Fungal Risk Forecast</span>
+    </div>
+    <div style="margin-bottom: 1rem; color: var(--text-muted);">
+      <div><strong>Location:</strong> {{ weather.location }}</div>
+      <div><strong>Rain Outlook:</strong> {{ weather.rain_forecast }}</div>
+      <div><strong>Wind Speed:</strong> {{ weather.wind_speed_kmh }} km/h</div>
+    </div>
+    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+      <strong style="color: var(--accent-mint);">Fungal Disease Risk Levels:</strong>
+      {% for risk_name, risk_val in weather.disease_risks.items() %}
+        <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.88rem;">
+          <span>{{ risk_name }}</span>
+          <strong style="color: #f59e0b;">{{ risk_val }}</strong>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="card-title">
+      <span>🚀</span>
+      <span>Quick Farm Tools</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <a href="/" class="btn-nav" style="text-align: center;">🌿 Scan Leaf Photo</a>
+      <a href="/farms" class="btn-nav" style="text-align: center;">🚜 Manage Farms</a>
+      <a href="/soil" class="btn-nav" style="text-align: center;">🧪 Soil NPK Test</a>
+      <a href="/marketplace" class="btn-nav" style="text-align: center;">🛒 Buy Medicines</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Recent Scans Table -->
+<div class="glass-card">
+  <div class="card-title">
+    <span>📋</span>
+    <span>Recent Leaf Diagnostic Scans</span>
+  </div>
+  {% if scans and scans|length > 0 %}
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Crop</th>
+          <th>Predicted Condition</th>
+          <th>Status</th>
+          <th>Confidence</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for scan in scans %}
+          <tr>
+            <td>#{{ scan.id }}</td>
+            <td><strong>{{ scan.crop }}</strong></td>
+            <td>{{ scan.disease }}</td>
+            <td>
+              <span class="badge-status {% if scan.status == 'Healthy' %}healthy{% else %}diseased{% endif %}">
+                {{ scan.status }}
+              </span>
+            </td>
+            <td><strong style="color: var(--accent-mint);">{{ scan.confidence }}%</strong></td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ scan.created_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No leaf scans logged yet. <a href="/">Run a scan on the analyzer page</a></p>
+  {% endif %}
+</div>
+{% endblock %}

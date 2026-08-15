@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Studio - Agro-Medicine Marketplace Dashboard{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🏬 Agro-Medicine Seller Studio</h1>
+  <p style="color: var(--text-muted);">Manage your organic and inorganic treatment inventory, review stock alerts, and list products.</p>
+</section>
+
+<!-- Low Inventory Warning Alert -->
+{% set low_stock_count = products|selectattr('stock', 'le', 15)|list|length %}
+{% if low_stock_count > 0 %}
+  <div style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 2rem; color: #fca5a5; display: flex; align-items: center; gap: 1rem;">
+    <span style="font-size: 1.8rem;">⚠️</span>
+    <div>
+      <strong>Low Stock Inventory Alert!</strong>
+      <div>You have {{ low_stock_count }} product(s) running low on stock (<= 15 units remaining). Update inventory to prevent missed orders.</div>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Add New Product Form Workspace -->
+<div class="workspace-grid" style="margin-bottom: 2rem;">
+  
+  <div class="glass-card">
+    <div class="card-title">
+      <span>➕</span>
+      <span>List New Agro-Medicine Product</span>
+    </div>
+
+    <form method="POST" action="/seller/add-product">
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Product Name</label>
+        <input type="text" name="name" required placeholder="e.g. Organic Neem Bio-Fungicide 1L" style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Category Type</label>
+          <select name="type" style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+            <option value="organic">Organic Remedy</option>
+            <option value="chemical">Inorganic / Chemical</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Price ($ USD)</label>
+          <input type="number" step="0.01" name="price" required placeholder="14.99" style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Stock Quantity</label>
+          <input type="number" name="stock" value="50" required style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Target Disease</label>
+          <input type="text" name="target_disease" placeholder="e.g. Early Blight, Scab, Rust" style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Description</label>
+        <textarea name="description" rows="2" placeholder="Product features and chemical composition..." style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Step-by-Step Usage Instructions</label>
+        <textarea name="usage_steps" rows="2" placeholder="e.g. Mix 10ml per 1L water. Spray foliage early in the morning every 7 days." style="width: 100%; padding: 0.65rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary">
+        <span>Publish Product to Marketplace</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Seller Inventory Table -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>📦</span>
+      <span>My Listed Products ({{ products|length }})</span>
+    </div>
+    {% if products and products|length > 0 %}
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>QR Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in products %}
+            <tr>
+              <td>
+                <strong>{{ p.name }}</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Target: {{ p.target_disease }}</div>
+              </td>
+              <td><span style="text-transform: capitalize;">{{ p.type }}</span></td>
+              <td><strong style="color: var(--accent-mint);">${{ "%.2f"|format(p.price) }}</strong></td>
+              <td>
+                <span style="font-weight: bold; {% if p.stock <= 15 %}color: #ef4444;{% else %}color: var(--accent-mint);{% endif %}">
+                  {{ p.stock }} units
+                </span>
+              </td>
+              <td>
+                <a href="/product/{{ p.id }}" target="_blank" style="font-size: 0.8rem;">📱 View QR</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No products listed yet. Use the form on the left to add your first product.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

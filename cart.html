@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart & CIA Secured Checkout - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🛒 Shopping Cart & CIA Secured Checkout</h1>
+  <p style="color: var(--text-muted);">Review your selected agro-medicines, enter shipping details, and complete encrypted digital payment.</p>
+</section>
+
+<div class="workspace-grid">
+  
+  <!-- Left Panel: Cart Items List -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>📦</span>
+      <span>Selected Cart Items</span>
+    </div>
+
+    <div id="cartItemsContainer"></div>
+
+    <div style="border-top: 1px solid var(--border-glass); padding-top: 1rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 1.1rem; color: #fff;">Total Payable Amount:</span>
+      <span style="font-size: 1.8rem; font-weight: 800; color: var(--accent-mint);" id="cartTotalVal">$0.00</span>
+    </div>
+  </div>
+
+  <!-- Right Panel: Digital Payment Gateway Simulation -->
+  <div class="glass-card">
+    <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <span>💳</span>
+        <span>CIA Secured Digital Payment</span>
+      </div>
+      <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: var(--accent-mint); border: 1px solid var(--border-active); padding: 2px 8px; border-radius: 12px; font-weight: bold;">
+        🔒 SSL 256-bit Encrypted
+      </span>
+    </div>
+
+    <form method="POST" action="/checkout" id="checkoutForm">
+      <input type="hidden" name="cart_data" id="cartDataInput">
+
+      <!-- Payment Method Selection -->
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;" data-i18n="lbl_payment_method">Select Payment Method</label>
+        <select name="payment_method" id="paymentMethodSelect" onchange="togglePaymentInputs()" style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.6); border: 1px solid var(--accent-primary); border-radius: var(--radius-sm); color: var(--accent-mint); font-weight: 700;">
+          <option value="UPI">📱 Instant UPI Payment (Google Pay / PhonePe / Paytm)</option>
+          <option value="CARD">💳 Credit / Debit Card (Luhn Checked Visa / MasterCard)</option>
+          <option value="COD">💵 Cash on Delivery (COD Code Verification)</option>
+        </select>
+      </div>
+
+      <!-- Dynamic UPI Input -->
+      <div id="upiInputContainer" style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Virtual Payment Address (UPI ID)</label>
+        <input type="text" name="upi_id" placeholder="e.g. farmer@upi or username@okicici" value="farmer@upi" style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+      </div>
+
+      <!-- Dynamic Card Input -->
+      <div id="cardInputContainer" style="display: none; margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Credit / Debit Card Number</label>
+        <input type="text" name="card_number" placeholder="4532 0123 4567 8901 (Luhn Verified)" style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff; margin-bottom: 0.75rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <input type="text" placeholder="MM/YY Expiry" style="padding: 0.65rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+          <input type="password" maxlength="4" placeholder="CVV Security Code" style="padding: 0.65rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+      </div>
+
+      <!-- Shipping Address Input -->
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;" data-i18n="lbl_shipping_address">Shipping Delivery Address</label>
+        <textarea name="shipping_address" required placeholder="Enter full address, village/city, landmark, and pin code..." style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;" rows="3"></textarea>
+      </div>
+
+      <!-- CIA Security Badges -->
+      <div style="background: rgba(16,185,129,0.08); border: 1px solid var(--border-active); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--text-muted);">
+        <strong>🔒 CIA Triad Security Protections:</strong><br>
+        &bull; <strong>Confidentiality:</strong> Encrypted AES-256 Token Signature<br>
+        &bull; <strong>Integrity:</strong> Luhn Checksum & HMAC Transaction Validation<br>
+        &bull; <strong>Availability:</strong> Instant Order Receipt & 1-Click Order Cancellation
+      </div>
+
+      <button type="submit" class="btn-primary" id="btnCompleteCheckout">
+        <span data-i18n="btn_confirm_pay">🔒 Confirm Order & Pay</span>
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  function togglePaymentInputs() {
+    const method = document.getElementById('paymentMethodSelect').value;
+    const upiBox = document.getElementById('upiInputContainer');
+    const cardBox = document.getElementById('cardInputContainer');
+    if (method === 'UPI') {
+      upiBox.style.display = 'block';
+      cardBox.style.display = 'none';
+    } else if (method === 'CARD') {
+      upiBox.style.display = 'none';
+      cardBox.style.display = 'block';
+    } else {
+      upiBox.style.display = 'none';
+      cardBox.style.display = 'none';
+    }
+  }
+</script>
+{% endblock %}

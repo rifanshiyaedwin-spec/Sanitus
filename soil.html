@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Soil Health NPK & pH Analyzer - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🧪 Soil Health NPK & pH Recommendation Engine</h1>
+  <p style="color: var(--text-muted);">Enter your soil laboratory test values (pH, Nitrogen, Phosphorus, Potassium) to receive tailored fertilizer dosage calculations.</p>
+</section>
+
+<div class="workspace-grid">
+  
+  <!-- Soil Input Form -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>⚗</span>
+      <span>Soil Test Parameters Input</span>
+    </div>
+
+    <form method="POST" action="/soil">
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Soil pH (0.0 to 14.0)</label>
+        <input type="number" step="0.1" name="ph" value="5.8" required style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Nitrogen (N mg/kg)</label>
+          <input type="number" name="nitrogen" value="115" required style="width: 100%; padding: 0.65rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Phosphorus (P mg/kg)</label>
+          <input type="number" name="phosphorus" value="22" required style="width: 100%; padding: 0.65rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Potassium (K mg/kg)</label>
+          <input type="number" name="potassium" value="110" required style="width: 100%; padding: 0.65rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Field Area (Acres)</label>
+        <input type="number" step="0.5" name="acres" value="2.0" required style="width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #fff;">
+      </div>
+
+      <button type="submit" class="btn-primary">
+        <span>🧪 Calculate Soil Recommendations</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Soil Results & Recommendations View -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>🌾</span>
+      <span>Soil Health Report & Fertilizer Plan</span>
+    </div>
+
+    {% if result %}
+      <div style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 1.1rem; font-weight: bold; color: #fff;">Soil pH Status:</span>
+          <span class="badge-status {% if result.ph_status == 'Optimal' %}healthy{% else %}diseased{% endif %}">
+            {{ result.ph_status }}
+          </span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="color: #fff; margin-bottom: 0.5rem;">Key Soil Diagnostics:</h4>
+        <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+          {% for ins in result.insights %}
+            <li style="margin-bottom: 4px;">{{ ins }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="color: var(--accent-mint); margin-bottom: 0.75rem;">Recommended Fertilizer & Dosage Plan:</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for rec in result.recommendations %}
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 0.9rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <strong style="color: #fff;">{{ rec.name }}</strong>
+                <span style="color: var(--accent-mint); font-weight: bold;">{{ rec.dosage }}</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">{{ rec.reason }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <p style="font-size: 1.1rem;">Enter your soil lab values on the left panel to calculate fertilizer requirements.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

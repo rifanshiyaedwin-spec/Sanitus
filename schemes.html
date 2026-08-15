@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Government Schemes, Subsidies & Organic Certification - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🏛 Government Schemes, Crop Insurance & Subsidies</h1>
+  <p style="color: var(--text-muted);">Explore agricultural insurance programs, organic farming financial subsidies, and certification guidelines.</p>
+</section>
+
+<div class="workspace-grid">
+  
+  <div class="glass-card">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+      <span style="font-size: 2rem;">🌾</span>
+      <div>
+        <h3 style="color: #fff; margin: 0;">Pradhan Mantri Fasal Bima Yojana (PMFBY)</h3>
+        <div style="font-size: 0.85rem; color: var(--accent-mint);">Crop Insurance Scheme</div>
+      </div>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+      Provides comprehensive insurance cover against crop loss due to non-preventable natural risks like severe fungal disease outbreaks, droughts, and floods.
+    </p>
+    <a href="#" class="btn-nav" onclick="alert('Redirecting to official government portal...'); return false;">Apply for PMFBY Coverage</a>
+  </div>
+
+  <div class="glass-card">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+      <span style="font-size: 2rem;">🌱</span>
+      <div>
+        <h3 style="color: #fff; margin: 0;">Paramparagat Krishi Vikas Yojana (PKVY)</h3>
+        <div style="font-size: 0.85rem; color: var(--accent-mint);">Organic Farming Subsidy</div>
+      </div>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+      Financial assistance of ₹50,000 per hectare provided for organic inputs, neem extracts, bio-fungicides, and PGS organic certification.
+    </p>
+    <a href="#" class="btn-nav" onclick="alert('Redirecting to PKVY organic portal...'); return false;">View PKVY Guidelines</a>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% set active_page = "guide" %}
+
+{% block title %}Plant Disease Encyclopedia Catalog - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>Plant Village Disease Encyclopedia</h1>
+  <p style="color: var(--text-muted);">Comprehensive reference database covering 38 plant leaf conditions, pathogens, organic treatments, and preventive care guidelines.</p>
+</section>
+
+<!-- Search Catalog -->
+<div class="glass-card" style="margin-bottom: 2rem; padding: 1.25rem;">
+  <input type="text" id="guideSearchInput" placeholder="Search disease catalog (e.g. Early Blight, Scab, Tomato, Rust, Healthy)..." style="width: 100%; padding: 0.8rem 1.25rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-md); color: #fff; font-size: 1rem;">
+</div>
+
+<!-- Disease Cards Grid -->
+<div class="workspace-grid" id="diseaseGrid">
+  {% for key, info in kb.items() %}
+    <div class="glass-card disease-card" data-search="{{ info.crop }} {{ info.disease }} {{ info.scientific_name }} {{ info.status }}">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+        <span class="badge-status {% if info.status == 'Healthy' %}healthy{% else %}diseased{% endif %}">
+          {{ info.status }}
+        </span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Severity: {{ info.severity }}</span>
+      </div>
+      <h3>{{ info.crop }} - {{ info.disease }}</h3>
+      <div style="font-style: italic; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">{{ info.scientific_name }}</div>
+
+      <div style="margin-bottom: 1rem;">
+        <strong style="color: #fff; font-size: 0.88rem;">Symptoms:</strong>
+        <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+          {% for sym in info.symptoms %}
+            <li>{{ sym }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <strong style="color: var(--accent-mint); font-size: 0.88rem;">Organic Treatment:</strong>
+        <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+          {% for tr in info.organic_treatment %}
+            <li>{{ tr }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+  document.getElementById('guideSearchInput').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.disease-card');
+    cards.forEach(card => {
+      const searchData = card.getAttribute('data-search').toLowerCase();
+      if (searchData.includes(term)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+</script>
+{% endblock %}

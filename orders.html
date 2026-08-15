@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders & Delivery Tracking - PlantaSanitus🌿{% endblock %}
+
+{% block content %}
+<section style="margin-bottom: 2rem;">
+  <h1>🚚 My Orders & Live Delivery Tracking</h1>
+  <p style="color: var(--text-muted);">Track current delivery progress, view order history, and manage order cancellations.</p>
+</section>
+
+{% if orders and orders|length > 0 %}
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    {% for o in orders %}
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="margin: 0; color: #fff;">Order #{{ o.id }}</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Placed on: {{ o.created_at }} &bull; Payment: {{ o.payment_method }} ({{ o.payment_status }})</div>
+          </div>
+          <div>
+            <span class="badge-status {% if o.order_status == 'Cancelled' %}diseased{% else %}healthy{% endif %}">
+              STATUS: {{ o.order_status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Live Delivery Tracking Timeline Progress Bar -->
+        {% if o.order_status != 'Cancelled' %}
+          <div style="margin-bottom: 1.5rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+            <div style="font-size: 0.85rem; color: var(--accent-mint); font-weight: bold; margin-bottom: 1rem;">
+              🚚 Estimated Delivery Date: {{ o.delivery_date }}
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; font-size: 0.8rem;">
+              <div style="background: rgba(16,185,129,0.2); border: 1px solid var(--accent-primary); padding: 8px; border-radius: 6px; color: #fff;">
+                ✓ Order Placed
+              </div>
+              <div style="background: rgba(16,185,129,0.2); border: 1px solid var(--accent-primary); padding: 8px; border-radius: 6px; color: #fff;">
+                ✓ Processing
+              </div>
+              <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); padding: 8px; border-radius: 6px; color: var(--text-muted);">
+                In Transit
+              </div>
+              <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); padding: 8px; border-radius: 6px; color: var(--text-muted);">
+                Delivered
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Order Items List -->
+        <div style="margin-bottom: 1.25rem;">
+          <h4 style="color: #fff; margin-bottom: 0.5rem;">Ordered Products:</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for item in o.items %}
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; font-size: 0.9rem;">
+                <div>
+                  <strong>{{ item.product_name }}</strong> x {{ item.quantity }}
+                </div>
+                <div style="color: var(--accent-mint); font-weight: bold;">
+                  ${{ "%.2f"|format(item.unit_price * item.quantity) }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+          <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">Total Paid: ${{ "%.2f"|format(o.total_amount) }}</span>
+          
+          {% if o.order_status != 'Cancelled' and o.order_status != 'Delivered' %}
+            <a href="/cancel-order/{{ o.id }}" onclick="return confirm('Are you sure you want to cancel Order #{{ o.id }}?');" style="color: #ef4444; font-size: 0.88rem; font-weight: bold;">
+              🚫 Cancel Order
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="glass-card" style="text-align: center; padding: 4rem 1rem;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+    <h2>No Active Orders Found</h2>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Visit the Agro-Marketplace to purchase recommended bio-fungicides and treatments.</p>
+    <a href="/marketplace" class="btn-nav">Browse Marketplace</a>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}PlantaSanitus🌿 - Multi-Image XAI Leaf Analyzer & Smart Agriculture{% endblock %}
+
+{% block content %}
+<!-- Weather Intelligence Widget Banner -->
+<div class="glass-card" style="margin-bottom: 2rem; border-left: 4px solid var(--accent-primary); padding: 1.25rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span style="font-size: 2.2rem;">🌤</span>
+      <div>
+        <h4 style="margin: 0; color: #fff;" data-i18n="lbl_weather">Live Weather Intelligence</h4>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+          📍 <strong>{{ weather.location }}</strong> &bull; Temp: <strong>{{ weather.temperature_c }}°C</strong> &bull; Humidity: <strong style="color: var(--accent-mint);">{{ weather.humidity }}%</strong> &bull; Wind: {{ weather.wind_speed_kmh }} km/h
+        </div>
+      </div>
+    </div>
+    <div style="text-align: right;">
+      <span class="badge-status {% if weather.spray_status == 'SAFE' %}healthy{% else %}diseased{% endif %}">
+        {{ weather.spray_status }} SPRAYING
+      </span>
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">{{ weather.spray_advisory }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Workspace Layout Grid -->
+<section class="workspace-grid">
+  
+  <!-- Left Panel: Multi-Image Leaf Upload & Demo Samples -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>📷</span>
+      <span data-i18n="nav_analyzer">Multi-Image Leaf Diagnostics</span>
+    </div>
+
+    <!-- Dropzone for up to 3 leaf images -->
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="leafInput" accept="image/*" multiple>
+      <div class="drop-icon">🍃</div>
+      <div class="drop-title">Drag & Drop Leaf Photos Here</div>
+      <div class="drop-subtitle">Upload 1 to 3 leaf images from different angles for multi-angle AI consensus</div>
+    </div>
+
+    <!-- Multi-Image Preview Container -->
+    <div id="previewContainer" style="display: none; margin-top: 1rem;">
+      <div id="previewGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem;"></div>
+      <button type="button" onclick="resetDropzone()" style="background: rgba(0,0,0,0.6); color: #fff; border: 1px solid var(--border-glass); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; cursor: pointer;">
+        ✕ Reset Images
+      </button>
+    </div>
+
+    <!-- Analyze Button -->
+    <button type="button" class="btn-primary" id="analyzeBtn" disabled>
+      <span data-i18n="btn_analyze">🌿 Run AI Multi-Image Diagnostics</span>
+    </button>
+
+    <!-- Preset Demo Samples -->
+    <div class="sample-bar">
+      <span class="sample-label">Or click a 1-click preset demo leaf:</span>
+      <div class="sample-grid">
+        <div class="sample-item" onclick="selectSample('apple_scab.jpg')">
+          <img src="/static/samples/apple_scab.jpg" alt="Apple Scab">
+          <span>Apple Scab</span>
+        </div>
+        <div class="sample-item" onclick="selectSample('tomato_late_blight.jpg')">
+          <img src="/static/samples/tomato_late_blight.jpg" alt="Tomato Blight">
+          <span>Tomato Blight</span>
+        </div>
+        <div class="sample-item" onclick="selectSample('corn_common_rust.jpg')">
+          <img src="/static/samples/corn_common_rust.jpg" alt="Corn Rust">
+          <span>Corn Rust</span>
+        </div>
+        <div class="sample-item" onclick="selectSample('potato_healthy.jpg')">
+          <img src="/static/samples/potato_healthy.jpg" alt="Healthy Potato">
+          <span>Healthy Leaf</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Full Diagnostic Report & XAI Analysis -->
+  <div class="glass-card">
+    <div class="card-title">
+      <span>🔬</span>
+      <span>Diagnostic Report & XAI Analysis</span>
+    </div>
+
+    <!-- Empty State -->
+    <div class="result-placeholder" id="resultPlaceholder">
+      <div class="result-placeholder-icon">🌱</div>
+      <h3>No Leaf Image Analyzed</h3>
+      <p style="font-size: 0.9rem; color: var(--text-dim); margin-top: 0.5rem;">
+        Upload leaf photos on the left panel to execute Explainable AI (XAI) feature extraction, severity scoring, and treatment dosage calculations.
+      </p>
+    </div>
+
+    <!-- Active Comprehensive Diagnostic Report View -->
+    <div class="result-content" id="resultContent" style="display: none; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Top Badges & Heading -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <span class="badge-status diseased" id="resStatusBadge">⚠ DISEASE DETECTED</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" id="resMultiCount">Multi-Image Consensus (1 Image)</span>
+        </div>
+
+        <h2 class="result-crop-disease" id="resCropDisease">Tomato - Early Blight</h2>
+        <div class="scientific-name" id="resScientificName">Alternaria solani</div>
+      </div>
+
+      <!-- Severity, Urgency & Recovery Timeline Grid -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="lbl_severity">Disease Severity</div>
+          <div style="font-size: 1.1rem; font-weight: bold; color: #f59e0b;" id="resSeverityVal">🟡 Moderate (35%)</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="lbl_urgency">Treatment Urgency</div>
+          <div style="font-size: 1.1rem; font-weight: bold; color: #ef4444;" id="resUrgencyVal">High</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="lbl_recovery">Est. Recovery Time</div>
+          <div style="font-size: 1.1rem; font-weight: bold; color: var(--accent-mint);" id="resRecoveryVal">7-10 Days</div>
+        </div>
+      </div>
+
+      <!-- Confidence Meter -->
+      <div class="confidence-container" style="margin: 0;">
+        <div class="confidence-header">
+          <span>AI Detection Confidence</span>
+          <span class="confidence-val" id="resConfidenceVal">96.8%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="resConfidenceBar" style="width: 96.8%;"></div>
+        </div>
+      </div>
+
+      <!-- Explainable AI (XAI) Feature Reasons -->
+      <div style="background: rgba(16,185,129,0.08); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 1rem;">
+        <h4 style="color: var(--accent-mint); margin-bottom: 0.5rem;" data-i18n="lbl_xai">💡 Explainable AI (XAI) Identified Features:</h4>
+        <ul id="resXaiExplanations" style="list-style: none; padding: 0; font-size: 0.88rem; color: var(--text-muted);">
+          <li>✓ Leaf yellowing chlorosis halo around lesion margins</li>
+        </ul>
+      </div>
+
+      <!-- Key Symptoms & Pathogen Cause -->
+      <div>
+        <h4 style="color: #fff; margin-bottom: 0.4rem;" data-i18n="lbl_symptoms">Key Observed Symptoms:</h4>
+        <ul id="resSymptomsList" style="padding-left: 1.2rem; font-size: 0.88rem; color: var(--text-muted);"></ul>
+        <h4 style="color: #fff; margin-top: 1rem; margin-bottom: 0.3rem;" data-i18n="lbl_cause">Pathogen Cause:</h4>
+        <p id="resCauseText" style="font-size: 0.88rem; color: var(--text-muted);"></p>
+      </div>
+
+      <!-- Ranked Treatment Recommendations -->
+      <div>
+        <h4 style="color: var(--accent-mint); margin-bottom: 0.75rem;" data-i18n="lbl_ranked_treatments">⭐ Ranked Treatment Recommendations:</h4>
+        <div id="resRankedTreatments" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+      </div>
+
+      <!-- Dosage Calculator Section -->
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem;">
+        <h4 style="color: #fff; margin-bottom: 0.5rem;" data-i18n="lbl_dosage">🧪 Agro-Chemical Dosage Calculator</h4>
+        <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem;">
+          <label style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="lbl_field_area">Field Area (Acres):</label>
+          <input type="number" id="calcAcresInput" value="2.0" step="0.5" min="0.1" style="width: 100px; padding: 4px 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); border-radius: 4px; color: #fff;">
+          <button type="button" onclick="recalculateDosage()" class="btn-nav" style="padding: 4px 12px; font-size: 0.8rem;" data-i18n="btn_calc_dosage">Calculate</button>
+        </div>
+        <div id="calcDosageOutput" style="font-size: 0.9rem; color: var(--accent-mint); font-weight: 600;">
+          Required Fungicide: 480 ml &bull; Water Volume: 160 Liters
+        </div>
+      </div>
+
+      <!-- Spray Schedule Generator -->
+      <div>
+        <h4 style="color: #fff; margin-bottom: 0.5rem;" data-i18n="lbl_schedule">📅 Recommended Spraying Schedule:</h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; font-size: 0.8rem;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 0.6rem; border-radius: 6px;">
+            <strong style="color: var(--accent-mint);">Day 1</strong>
+            <div>Initial Treatment Spray</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 0.6rem; border-radius: 6px;">
+            <strong style="color: #f59e0b;">Day 7</strong>
+            <div>Organic Booster Spray</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 0.6rem; border-radius: 6px;">
+            <strong style="color: #60a5fa;">Day 14</strong>
+            <div>Recovery Inspection</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions & Export -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+        <a href="/marketplace" class="btn-nav" data-i18n="btn_buy">🛒 Buy Treatment Products</a>
+        <a href="#" id="exportReportBtn" target="_blank" style="color: var(--accent-mint); font-size: 0.9rem;" data-i18n="btn_download_report">📄 Download Report Certificate</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+{% endblock %}
